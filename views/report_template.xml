@@ -14,40 +14,42 @@
         <template id="report_template_dtn_custom">
             <t t-call="web.basic_layout">
                 <t t-foreach="docs" t-as="doc">
-                    <div style="width:58mm; height:40mm; font-size:9pt; background:#FFF; color:#000; padding: 1.5mm; margin:0; box-sizing:border-box; font-family: 'Arial', sans-serif; display: flex; flex-direction: row; justify-content: space-between; align-items: stretch; overflow: hidden;">
-                        
+                    <div t-attf-style="width:58mm; height:40mm; background:#FFF; color:#000; padding: 0 1mm; margin:0; box-sizing:border-box; font-family: 'Arial', sans-serif; display: flex; flex-direction: column; justify-content: flex-start; overflow: hidden; {{ 'page-break-before: always;' if not doc_first else '' }}">
+
                         <t t-if="doc.x_reliable_active and doc.x_reliable_name">
-                            <div style="flex-grow: 1; padding-right: 2mm; text-align: left; display: flex; flex-direction: column;">
-                                <div style="font-weight: bold; font-size: 10pt; margin-bottom: 2px;">
-                                    <t t-esc="doc.x_reliable_name"/>
+                            <div style="text-align: center; font-weight: bold; font-size: 10pt; width: 100%; margin-bottom: 2mm; flex-shrink: 0; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">
+                                <t t-esc="doc.x_reliable_name"/>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 2mm; flex-shrink: 0;">
+                                <div style="font-size: 16pt; font-weight: bold;">
+                                    <t t-esc="'{:,.0f}'.format(doc.x_reliable_lst_price)"/> <t t-esc="doc.x_reliable_currency_symbol"/>
                                 </div>
-
-                                <t t-if="doc.x_reliable_default_code">
-                                    <div style="font-size: 8pt; color: #444; margin-bottom: 2px;">
-                                        Арт: <t t-esc="doc.x_reliable_default_code"/>
-                                    </div>
-                                </t>
-
-                                <div style="font-size: 8pt; flex-grow: 1;">
-                                    <t t-foreach="doc.x_reliable_attribute_values" t-as="attr_val">
-                                        <div>
-                                            <t t-esc="attr_val.attribute_id.name"/>: <t t-esc="attr_val.name"/>
-                                        </div>
+                                <div style="width: 26mm; text-align: right;">
+                                    <t t-if="doc.x_reliable_barcode">
+                                        <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', doc.x_reliable_barcode, 300, 50)" style="max-width: 100%; height: auto;" alt="Barcode"/>
+                                        <div style="font-size: 7pt;"><t t-esc="doc.x_reliable_barcode"/></div>
                                     </t>
                                 </div>
                             </div>
                             
-                            <div style="width: 22mm; text-align: center; display: flex; flex-direction: column; justify-content: space-between;">
-                                <div style="font-size: 14pt; font-weight: bold;">
-                                    <t t-esc="'{:.2f}'.format(doc.x_reliable_lst_price).replace('.', ',')"/> <t t-esc="doc.x_reliable_currency_symbol"/>
+                            <div style="width: 100%; text-align: left; font-size: 7pt; flex-grow: 1; overflow: hidden; display: flex;">
+                                <t t-set="attributes" t-value="doc.x_reliable_attribute_values"/>
+                                <t t-set="midpoint" t-value="(len(attributes) + 1) // 2"/>
+                                <div style="width: 50%; padding-right: 2mm;">
+                                    <t t-foreach="attributes[:midpoint]" t-as="attr_val">
+                                        <div style="padding-bottom: 1px;">
+                                            <span><t t-esc="attr_val.attribute_id.name"/>:</span> <t t-esc="attr_val.name"/>
+                                        </div>
+                                    </t>
                                 </div>
-
-                                <t t-if="doc.x_reliable_barcode">
-                                    <div>
-                                        <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', doc.x_reliable_barcode, 300, 60)" style="max-width: 100%; height: auto;" alt="Barcode"/>
-                                        <div style="font-size: 7pt;"><t t-esc="doc.x_reliable_barcode"/></div>
-                                    </div>
-                                </t>
+                                <div style="width: 50%; padding-left: 2mm;">
+                                     <t t-foreach="attributes[midpoint:]" t-as="attr_val">
+                                        <div style="padding-bottom: 1px;">
+                                            <span><t t-esc="attr_val.attribute_id.name"/>:</span> <t t-esc="attr_val.name"/>
+                                        </div>
+                                    </t>
+                                </div>
                             </div>
                         </t>
 
