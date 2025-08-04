@@ -2,25 +2,61 @@
 <odoo>
     <data>
         <record id="action_report_dtn_attribute_label_new" model="ir.actions.report">
-            <field name="name">Этикетка (Надежное Название)</field> <field name="model">product.product</field>
+            <field name="name">Этикетка с атрибутами (40х58)</field>
+            <field name="model">product.product</field>
             <field name="report_type">qweb-pdf</field>
-            <field name="report_name">dtn_attribute_label.report_template_product_name_reliable</field> <field name="report_file">dtn_attribute_label.report_template_product_name_reliable</field>
+            <field name="report_name">dtn_attribute_label.report_template_dtn_custom</field>
+            <field name="report_file">dtn_attribute_label.report_template_dtn_custom</field>
             <field name="binding_model_id" ref="product.model_product_product"/>
             <field name="paperformat_id" ref="dtn_attribute_label.paperformat_label_40x58_dymo_override"/>
         </record>
 
-        <template id="report_template_product_name_reliable">
+        <template id="report_template_dtn_custom">
             <t t-call="web.basic_layout">
                 <t t-foreach="docs" t-as="doc">
-                    <div style="width:40mm; height:58mm; font-size:12pt; background:#FFF; color:#000; padding:1mm; margin:0; box-sizing:border-box; font-family: Arial, Helvetica, sans-serif; text-align: center; display: flex; align-items: center; justify-content: center; overflow: hidden;">
-                        <t t-if="doc.x_reliable_name and doc.x_reliable_active">
-                            <span><t t-esc="doc.x_reliable_name"/></span>
-                            <span><t t-esc="doc.x_reliable_default_code"/></span>
+                    <div style="width:40mm; height:58mm; font-size:9pt; background:#FFF; color:#000; padding: 1.5mm; margin:0; box-sizing:border-box; font-family: 'Arial', sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: space-between; align-items: center; overflow: hidden;">
+                        
+                        <t t-if="doc.x_reliable_active and doc.x_reliable_name">
+                            <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; width: 100%;">
+                                <div style="font-weight: bold; font-size: 10pt; margin-bottom: 4px;">
+                                    <t t-esc="doc.x_reliable_name"/>
+                                </div>
+
+                                <t t-if="doc.x_reliable_default_code">
+                                    <div style="font-size: 8pt; color: #444; margin-bottom: 4px;">
+                                        Арт: <t t-esc="doc.x_reliable_default_code"/>
+                                    </div>
+                                </t>
+
+                                <div style="font-size: 8pt; margin-bottom: 8px;">
+                                    <t t-foreach="doc.x_reliable_attribute_values" t-as="attr_val">
+                                        <div>
+                                            <t t-esc="attr_val.attribute_id.name"/>: <t t-esc="attr_val.name"/>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                            
+                            <div style="width: 100%;">
+                                <div style="font-size: 14pt; font-weight: bold; margin-bottom: 5px;">
+                                    <t t-esc="'{:.2f}'.format(doc.x_reliable_lst_price).replace('.', ',')"/> <t t-esc="doc.x_reliable_currency_symbol"/>
+                                </div>
+
+                                <t t-if="doc.x_reliable_barcode">
+                                    <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', doc.x_reliable_barcode, 300, 60)" style="width: 100%; height: auto;" alt="Barcode"/>
+                                    <div style="font-size: 7pt;"><t t-esc="doc.x_reliable_barcode"/></div>
+                                </t>
+                            </div>
                         </t>
+
                         <t t-else="">
-                            <span>Недоступно. ID: <t t-esc="doc.id or 'N/A'"/> (Активно: <t t-esc="doc.x_reliable_active"/>)</span>
-                            <t t-if="not doc.x_reliable_name"><span> (Имя не получено)</span></t>
+                            <div style="text-align:center; padding: 5px; color: red;">
+                                <span>Товар недоступен</span><br/>
+                                <span>ID: <t t-esc="doc.id or 'N/A'"/></span><br/>
+                                <t t-if="not doc.x_reliable_active"><span>(Неактивен)</span></t>
+                            </div>
                         </t>
+
                     </div>
                 </t>
             </t>
