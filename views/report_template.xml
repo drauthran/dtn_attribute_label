@@ -15,6 +15,7 @@
                     <div style="width:40mm; height:58mm; font-size:12pt; background:#FFF; color:#000; padding:1mm; margin:0; box-sizing:border-box; font-family: Arial, Helvetica, sans-serif; text-align: center; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                         <t t-if="doc.x_reliable_name and doc.x_reliable_active">
                             <span><t t-esc="doc.x_reliable_name"/></span>
+                            <span><t t-esc="doc.x_reliable_default_code"/></span>
                         </t>
                         <t t-else="">
                             <span>Недоступно. ID: <t t-esc="doc.id or 'N/A'"/> (Активно: <t t-esc="doc.x_reliable_active"/>)</span>
