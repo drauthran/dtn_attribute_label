@@ -23,9 +23,9 @@
 
                             <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 2mm; flex-shrink: 0;">
                                 <div style="font-size: 16pt; font-weight: bold;">
-                                    <t t-esc="'{:,.0f}'.format(doc.x_reliable_lst_price)"/> <t t-esc="doc.x_reliable_currency_symbol"/>
+                                    <t t-esc="'{:.0f}'.format(doc.x_reliable_lst_price)"/> <t t-esc="doc.x_reliable_currency_symbol"/>
                                 </div>
-                                <div style="width: 26mm; text-align: right;">
+                                <div style="width: 26mm; text-align: left;">
                                     <t t-if="doc.x_reliable_barcode">
                                         <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', doc.x_reliable_barcode, 300, 50)" style="max-width: 100%; height: auto;" alt="Barcode"/>
                                         <div style="font-size: 7pt;"><t t-esc="doc.x_reliable_barcode"/></div>
@@ -34,19 +34,20 @@
                             </div>
                             
                             <div style="width: 100%; text-align: left; font-size: 7pt; flex-grow: 1; overflow: hidden; display: flex;">
-                                <t t-set="attributes" t-value="doc.x_reliable_attribute_values"/>
-                                <t t-set="midpoint" t-value="(len(attributes) + 1) // 2"/>
+                                <t t-set="grouped_attributes" t-value="doc.get_grouped_attributes()"/>
+                                <t t-set="midpoint" t-value="(len(grouped_attributes) + 1) // 2"/>
+
                                 <div style="width: 50%; padding-right: 2mm;">
-                                    <t t-foreach="attributes[:midpoint]" t-as="attr_val">
+                                    <t t-foreach="grouped_attributes[:midpoint]" t-as="attr_tuple">
                                         <div style="padding-bottom: 1px;">
-                                            <span><t t-esc="attr_val.attribute_id.name"/>:</span> <t t-esc="attr_val.name"/>
+                                            <span><t t-esc="attr_tuple[0]"/>:</span> <t t-esc="attr_tuple[1]"/>
                                         </div>
                                     </t>
                                 </div>
                                 <div style="width: 50%; padding-left: 2mm;">
-                                     <t t-foreach="attributes[midpoint:]" t-as="attr_val">
+                                     <t t-foreach="grouped_attributes[midpoint:]" t-as="attr_tuple">
                                         <div style="padding-bottom: 1px;">
-                                            <span><t t-esc="attr_val.attribute_id.name"/>:</span> <t t-esc="attr_val.name"/>
+                                            <span><t t-esc="attr_tuple[0]"/>:</span> <t t-esc="attr_tuple[1]"/>
                                         </div>
                                     </t>
                                 </div>

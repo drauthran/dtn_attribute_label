@@ -225,3 +225,34 @@ class ProductProduct(models.Model):
             _logger.info(f"DTN Attr: Final x_reliable_attribute_values for {rec.id}: {len(rec.x_reliable_attribute_values)} records.")
             if len(rec.x_reliable_attribute_values) > 0:
                 _logger.info(f"DTN Attr: Sample attribute IDs for {rec.id}: {[val.id for val in rec.x_reliable_attribute_values[:5]]}")
+
+    # НОВИЙ МЕТОД ДЛЯ ГРУПУВАННЯ АТРИБУТІВ
+    def get_grouped_attributes(self):
+        """
+        Цей метод групує значення атрибутів.
+        Замість [('Стиль', 'Рок'), ('Стиль', 'Гранж')]
+        він повертає [('Стиль', 'Рок, Гранж')]
+        """
+        self.ensure_one()
+        
+        # Словник для тимчасового зберігання згрупованих даних
+        grouped_data = {}
+        
+        # Використовуємо наше надійне поле як джерело даних
+        for attr_val in self.x_reliable_attribute_values:
+            attribute_name = attr_val.attribute_id.name
+            value_name = attr_val.name
+            
+            # Якщо ми ще не зустрічали такий атрибут, створюємо для нього новий список
+            if attribute_name not in grouped_data:
+                grouped_data[attribute_name] = []
+            
+            # Додаємо значення до списку відповідного атрибута
+            grouped_data[attribute_name].append(value_name)
+            
+        # Тепер перетворюємо словник у фінальний список пар ('атрибут', 'значення, значення...')
+        result = []
+        for attribute, values in grouped_data.items():
+            result.append((attribute, ', '.join(values)))
+            
+        return result
